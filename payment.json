@@ -1,0 +1,74 @@
+[
+  {
+    "model": "users.payment",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "date": "2024-06-02",
+      "course": 3,
+      "lesson": null,
+      "price": "90000.00",
+      "way": "наличные"
+    }
+  },
+  {
+    "model": "users.payment",
+    "pk": 2,
+    "fields": {
+      "user": 1,
+      "date": "2024-06-01",
+      "course": null,
+      "lesson": 1,
+      "price": "3002.01",
+      "way": "перевод"
+    }
+  },
+  {
+    "model": "users.payment",
+    "pk": 3,
+    "fields": {
+      "user": 1,
+      "date": "2024-05-31",
+      "course": null,
+      "lesson": 2,
+      "price": "3103.02",
+      "way": "перевод"
+    }
+  },
+  {
+    "model": "users.payment",
+    "pk": 4,
+    "fields": {
+      "user": 1,
+      "date": "2024-05-29",
+      "course": null,
+      "lesson": 3,
+      "price": "3103.02",
+      "way": "наличные"
+    }
+  },
+  {
+    "model": "users.payment",
+    "pk": 5,
+    "fields": {
+      "user": 1,
+      "date": "2024-04-24",
+      "course": null,
+      "lesson": 3,
+      "price": "3103.02",
+      "way": "наличные"
+    }
+  },
+  {
+    "model": "users.payment",
+    "pk": 6,
+    "fields": {
+      "user": 1,
+      "date": "2024-03-29",
+      "course": null,
+      "lesson": 3,
+      "price": "3103.02",
+      "way": "перевод"
+    }
+  }
+]
