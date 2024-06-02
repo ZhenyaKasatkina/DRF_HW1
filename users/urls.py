@@ -1,11 +1,15 @@
 from django.urls import path
+from rest_framework.routers import DefaultRouter
 
 from users.apps import UsersConfig
-from users.views import ProfileUpdateAPIView, ProfileCreateAPIView
+from users.views import (  # ProfileUpdateAPIView, ProfileCreateAPIView, ProfileRetrieveAPIView,
+    PaymentListAPIView, UserViewSet)
 
 app_name = UsersConfig.name
 
+router = DefaultRouter()
+router.register(r"", UserViewSet, basename="user")
+
 urlpatterns = [
-    path('create/', ProfileCreateAPIView.as_view(), name='profile_create'),
-    path('update/<int:pk>/', ProfileUpdateAPIView.as_view(), name='profile_update'),
-]
+    path("payment/", PaymentListAPIView.as_view(), name="payment_list"),
+] + router.urls
