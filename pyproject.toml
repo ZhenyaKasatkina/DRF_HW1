@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "drf-hw1"
+version = "0.1.0"
+description = ""
+authors = ["ZhenyaKasatkina <knopisha.zh@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "^5.0.6"
+psycopg2-binary = "^2.9.9"
+pillow = "^10.3.0"
+djangorestframework = "^3.15.1"
+python-dotenv = "^1.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
