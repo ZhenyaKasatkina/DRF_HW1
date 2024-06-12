@@ -1,3 +1,180 @@
-from django.test import TestCase
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase
 
-# Create your tests here.
+from education.models import Course, Lesson, Subscription
+from users.models import User
+
+
+class EducationTestCase(APITestCase):
+
+    def setUp(self):
+        self.user = User.objects.create(email="new_email@list.ru")
+        self.course = Course.objects.create(name="программирование", owner=self.user)
+        self.lesson = Lesson.objects.create(
+            name="тестирование", course=self.course, owner=self.user
+        )
+        self.sub = Subscription.objects.create(
+            is_active=True, owner=self.user, course=self.course
+        )
+        self.client.force_authenticate(user=self.user)
+
+    def test_lesson_retrieve(self):
+        """Проверка детализации"""
+
+        url = reverse("education:lesson_retrieve", args=(self.lesson.pk,))
+        response = self.client.get(url)
+        data = response.json()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # print(data)
+        self.assertEqual(data.get("name"), self.lesson.name)
+
+    def test_lesson_create(self):
+        """Проверка создания урока"""
+
+        url = reverse("education:lesson_create")
+        data = {"name": "python", "course": self.course.pk}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Lesson.objects.all().count(), 2)
+
+    def test_lesson_update(self):
+        """Проверка изменения урока"""
+
+        url = reverse("education:lesson_update", args=(self.lesson.pk,))
+        data = {"name": "jw", "course": self.course.pk}
+        response = self.client.put(url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data.get("name"), data["name"])
+
+    def test_lesson_delete(self):
+        """Проверка удаления урока"""
+
+        url = reverse("education:lesson_delete", args=(self.lesson.pk,))
+        response = self.client.delete(url)
+        # print(response)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Lesson.objects.all().count(), 0)
+
+    def test_lesson_list(self):
+        """Проверка списка уроков"""
+
+        url = reverse("education:lesson_list")
+        response = self.client.get(url)
+        data = response.json()
+        result = {
+            "count": 1,
+            "next": None,
+            "previous": None,
+            "results": [
+                {
+                    "id": self.lesson.pk,
+                    "video": None,
+                    "name": self.lesson.name,
+                    "preview": None,
+                    "description": None,
+                    "course": self.course.pk,
+                    "owner": self.user.pk,
+                }
+            ],
+        }
+        # print(response)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data, result)
+
+    def test_change_sub_activity(self):
+        """Изменение активности подписок пользователя"""
+
+        url = reverse("education:sub")
+        data = {"course": self.course.pk}
+        response = self.client.post(url, data)
+        # print(response.json())
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), {"message": "подписка удалена"})
+        data = {"course": self.course.pk}
+        response = self.client.post(url, data)
+        # print(response.json())
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), {"message": "подписка добавлена"})
+
+    def test_course_retrieve(self):
+        """Проверка детализации курса"""
+
+        url = reverse("education:course-detail", args=(self.course.pk,))
+        # print(url)
+        response = self.client.get(url)
+        data = response.json()
+        # print(data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # print(data)
+        self.assertEqual(data.get("name"), self.course.name)
+
+    def test_course_create(self):
+        """Проверка создания курса"""
+
+        url = reverse("education:course-list")
+        # print(url)
+        data = {"name": "иностранных языков"}
+        response = self.client.post(url, data)
+        # print(response.json())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Course.objects.all().count(), 2)
+
+    def test_update(self):
+        """Проверка изменения курса"""
+
+        url = reverse("education:course-detail", args=(self.course.pk,))
+        data = {"name": "иностранных языков"}
+        response = self.client.put(url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data.get("name"), data["name"])
+
+    def test_delete(self):
+        """Проверка удаления курса"""
+
+        url = reverse("education:course-detail", args=(self.course.pk,))
+        response = self.client.delete(url)
+        # print(response)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Course.objects.all().count(), 0)
+
+    def test_list(self):
+        """Проверка списка курсов"""
+
+        url = reverse("education:course-list")
+        response = self.client.get(url)
+        data = response.json()
+        result = {
+            "count": 1,
+            "next": None,
+            "previous": None,
+            "results": [
+                {
+                    "id": self.course.pk,
+                    "count_lessons": Lesson.objects.filter(
+                        course=self.course.pk
+                    ).count(),
+                    "subscription": "На программирование Вы подписаны",
+                    "lesson": [
+                        {
+                            "id": self.lesson.pk,
+                            "video": None,
+                            "name": self.lesson.name,
+                            "preview": None,
+                            "description": None,
+                            "course": self.course.pk,
+                            "owner": self.course.owner.pk,
+                        },
+                    ],
+                    "url": None,
+                    "name": self.course.name,
+                    "preview": None,
+                    "description": None,
+                    "owner": self.course.owner.pk,
+                },
+            ],
+        }
+        # print(data)
+        # print(result)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data, result)
