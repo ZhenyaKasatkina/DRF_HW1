@@ -15,7 +15,7 @@ class UsersTestCase(APITestCase):
         self.lesson = Lesson.objects.create(name="тестирование", course=self.course, owner=self.user)
         self.payment = Payment.objects.create(
             user=self.user,
-            date="2024-06-02",
+            date="2024-06-02T00:00:00+03:00",
             course=self.course,
             price="12000.01",
             way="перевод",
@@ -27,11 +27,13 @@ class UsersTestCase(APITestCase):
 
         url = reverse("users:login")
         data = {"email": "em@list.ru", "password": "1q"}
-        self.user = User.objects.create(
-            email=data.get("email"), password=make_password(data.get("password"))
-        )
+        self.user = User.objects.create(email=data.get("email"), password=make_password(data.get("password")))
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        data = {"email": "123asd", "password": "12qwe"}
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_retrieve(self):
         """Проверка детализации"""
@@ -42,6 +44,12 @@ class UsersTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data.get("email"), self.user.email)
 
+        url = reverse("users:user-detail", args=(101,))
+        response = self.client.get(url)
+        data = response.json()
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(data.get("email"), None)
+
     def test_create(self):
         """Проверка создания пользователя"""
 
@@ -51,17 +59,27 @@ class UsersTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(User.objects.all().count(), 2)
 
+        data = {"email": "create@list.ru"}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(User.objects.all().count(), 2)
+
     def test_update(self):
         """Проверка изменения пользователя"""
 
         url = reverse("users:user-detail", args=(self.user.pk,))
-        data = {"email": "create@list.ru", "password": "qwe"}
+        data = {"email": "create@list.ru", "password": ""}
         response = self.client.put(url, data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(data.get("email"), data["email"])
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.json(),  {'password': ['This field may not be blank.']})
 
     def test_delete(self):
         """Проверка удаления пользователя"""
+
+        url = reverse("users:user-detail", args=(not self.user.pk,))
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(User.objects.all().count(), 1)
 
         url = reverse("users:user-detail", args=(self.user.pk,))
         response = self.client.delete(url)
@@ -95,6 +113,10 @@ class UsersTestCase(APITestCase):
                 "user": self.user.pk,
                 "course": self.course.pk,
                 "lesson": None,
+                "is_paid": self.payment.is_paid,
+                "link": self.payment.link,
+                "session_id": self.payment.session_id
+
             }
         ]
         self.assertEqual(response.status_code, status.HTTP_200_OK)
