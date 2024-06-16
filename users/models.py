@@ -39,8 +39,9 @@ class Payment(models.Model):
         related_name="payment",
         on_delete=models.CASCADE,
         verbose_name="пользователь",
+        **NULLABLE
     )
-    date = models.DateField(verbose_name="Дата оплаты")
+    date = models.DateTimeField(verbose_name="Дата создания платежа", **NULLABLE)
     course = models.ForeignKey(
         Course,
         related_name="payment",
@@ -56,7 +57,7 @@ class Payment(models.Model):
         **NULLABLE,
     )
     price = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="сумма оплаты"
+        max_digits=10, decimal_places=2, verbose_name="сумма оплаты", **NULLABLE
     )
     CASH = "наличные"
     TRANSFER = "перевод"
@@ -65,8 +66,11 @@ class Payment(models.Model):
         TRANSFER: "перевод",
     }
     way = models.CharField(
-        choices=WAY, max_length=15, verbose_name="Способ оплаты", default=CASH
+        choices=WAY, max_length=15, verbose_name="Способ оплаты", default=TRANSFER
     )
+    session_id = models.CharField(max_length=100, verbose_name="сессия", **NULLABLE)
+    link = models.URLField(max_length=400, verbose_name="ссылка на оплату", **NULLABLE)
+    is_paid = models.BooleanField(verbose_name="Наличие оплаты", default=False)
 
     def __str__(self):
         # Строковое отображение объекта

@@ -38,7 +38,9 @@ class CourseViewSet(viewsets.ModelViewSet):
             print(self)
             return Course.objects.all()
         else:
-            return Course.objects.filter(owner=self.request.user)
+            if not self.request.user.is_anonymous:
+                return Course.objects.filter(owner=self.request.user)
+            return None
 
 
 class LessonListAPIView(generics.ListAPIView):
@@ -50,7 +52,9 @@ class LessonListAPIView(generics.ListAPIView):
         if self.request.user.groups.filter(name="moderator").exists():
             return Lesson.objects.all()
         else:
-            return Lesson.objects.filter(owner=self.request.user)
+            if not self.request.user.is_anonymous:
+                return Lesson.objects.filter(owner=self.request.user)
+            return None
 
 
 class LessonRetrieveAPIView(generics.RetrieveAPIView):

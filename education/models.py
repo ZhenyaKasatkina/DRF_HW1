@@ -21,6 +21,9 @@ class Course(models.Model):
         on_delete=models.SET_NULL,
         **NULLABLE,
     )
+    price = models.DecimalField(
+        max_digits=10, decimal_places=2, verbose_name="стоимость курса", **NULLABLE
+    )
 
     def __str__(self):
         # Строковое отображение объекта
@@ -47,6 +50,9 @@ class Lesson(models.Model):
         verbose_name="владелец",
         on_delete=models.SET_NULL,
         **NULLABLE,
+    )
+    price = models.DecimalField(
+        max_digits=10, decimal_places=2, verbose_name="стоимость урока", **NULLABLE
     )
 
     def __str__(self):
