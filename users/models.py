@@ -39,7 +39,7 @@ class Payment(models.Model):
         related_name="payment",
         on_delete=models.CASCADE,
         verbose_name="пользователь",
-        **NULLABLE
+        **NULLABLE,
     )
     date = models.DateTimeField(verbose_name="Дата создания платежа", **NULLABLE)
     course = models.ForeignKey(

@@ -12,7 +12,9 @@ class UsersTestCase(APITestCase):
     def setUp(self):
         self.user = User.objects.create(email="new_email@list.ru", password="123q")
         self.course = Course.objects.create(name="программирование", owner=self.user)
-        self.lesson = Lesson.objects.create(name="тестирование", course=self.course, owner=self.user)
+        self.lesson = Lesson.objects.create(
+            name="тестирование", course=self.course, owner=self.user
+        )
         self.payment = Payment.objects.create(
             user=self.user,
             date="2024-06-02T00:00:00+03:00",
@@ -27,7 +29,9 @@ class UsersTestCase(APITestCase):
 
         url = reverse("users:login")
         data = {"email": "em@list.ru", "password": "1q"}
-        self.user = User.objects.create(email=data.get("email"), password=make_password(data.get("password")))
+        self.user = User.objects.create(
+            email=data.get("email"), password=make_password(data.get("password"))
+        )
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -71,7 +75,9 @@ class UsersTestCase(APITestCase):
         data = {"email": "create@list.ru", "password": ""}
         response = self.client.put(url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.json(),  {'password': ['This field may not be blank.']})
+        self.assertEqual(
+            response.json(), {"password": ["This field may not be blank."]}
+        )
 
     def test_delete(self):
         """Проверка удаления пользователя"""
@@ -115,8 +121,7 @@ class UsersTestCase(APITestCase):
                 "lesson": None,
                 "is_paid": self.payment.is_paid,
                 "link": self.payment.link,
-                "session_id": self.payment.session_id
-
+                "session_id": self.payment.session_id,
             }
         ]
         self.assertEqual(response.status_code, status.HTTP_200_OK)

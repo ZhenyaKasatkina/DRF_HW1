@@ -100,7 +100,7 @@ class EducationTestCase(APITestCase):
                     "preview": None,
                     "description": None,
                     "course": self.course.pk,
-                    'price': None,
+                    "price": None,
                     "owner": self.user.pk,
                 }
             ],
@@ -128,7 +128,9 @@ class EducationTestCase(APITestCase):
         data = {"course": 101}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(response.json(), {"detail": "No Course matches the given query."})
+        self.assertEqual(
+            response.json(), {"detail": "No Course matches the given query."}
+        )
 
     def test_course_retrieve(self):
         """Проверка детализации курса"""
@@ -146,7 +148,7 @@ class EducationTestCase(APITestCase):
         response = self.client.get(url)
         data = response.json()
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(data, {'detail': 'No Course matches the given query.'})
+        self.assertEqual(data, {"detail": "No Course matches the given query."})
 
     def test_course_create(self):
         """Проверка создания курса"""
@@ -220,7 +222,7 @@ class EducationTestCase(APITestCase):
                             "description": None,
                             "course": self.course.pk,
                             "owner": self.course.owner.pk,
-                            'price': None,
+                            "price": None,
                         },
                     ],
                     "url": None,
@@ -228,7 +230,7 @@ class EducationTestCase(APITestCase):
                     "preview": None,
                     "description": None,
                     "owner": self.course.owner.pk,
-                    'price': None,
+                    "price": None,
                 },
             ],
         }

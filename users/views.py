@@ -2,7 +2,6 @@ from datetime import datetime
 
 import pytz
 from django_filters.rest_framework import DjangoFilterBackend
-
 from rest_framework import generics, viewsets
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import get_object_or_404
@@ -15,7 +14,8 @@ from users.models import Payment, User
 from users.permissions import IsRealUser
 from users.serializers import (PaymentSerializer, UserOtherSerializer,
                                UserSerializer)
-from users.services import create_stripe_product, create_stripe_price, create_stripe_session, get_stripe_session_result
+from users.services import (create_stripe_price, create_stripe_product,
+                            create_stripe_session, get_stripe_session_result)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -57,7 +57,10 @@ class PaymentListAPIView(generics.ListAPIView):
         SearchFilter,
         OrderingFilter,
     )
-    filterset_fields = ("course", "lesson",)
+    filterset_fields = (
+        "course",
+        "lesson",
+    )
     search_fields = ("way",)
     ordering_fields = ("date",)
 

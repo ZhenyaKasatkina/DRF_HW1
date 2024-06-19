@@ -24,6 +24,9 @@ class Course(models.Model):
     price = models.DecimalField(
         max_digits=10, decimal_places=2, verbose_name="стоимость курса", **NULLABLE
     )
+    last_update = models.DateTimeField(
+        verbose_name="Дата последнего обновления", **NULLABLE
+    )
 
     def __str__(self):
         # Строковое отображение объекта
@@ -40,7 +43,7 @@ class Lesson(models.Model):
     name = models.CharField(max_length=150, verbose_name="Название")
     preview = models.ImageField(upload_to="preview/", verbose_name="превью", **NULLABLE)
     description = models.TextField(verbose_name="описание", **NULLABLE)
-    video = models.URLField(verbose_name="ссылка на видео", **NULLABLE)
+    url = models.URLField(verbose_name="ссылка на видео", **NULLABLE)
     course = models.ForeignKey(
         Course, related_name="lesson", on_delete=models.CASCADE, verbose_name="курс"
     )
@@ -53,6 +56,9 @@ class Lesson(models.Model):
     )
     price = models.DecimalField(
         max_digits=10, decimal_places=2, verbose_name="стоимость урока", **NULLABLE
+    )
+    last_update = models.DateTimeField(
+        verbose_name="Дата последнего обновления", **NULLABLE
     )
 
     def __str__(self):
